@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -o errexit
 
+shopt -s globstar
+
 # Dependency checking
 declare -A DEPENDENCIES=(
 	["git --version"]="git is not installed, get it from\n  http://git-scm.com/"
@@ -100,6 +102,10 @@ for target in "${targets[@]}"; do
 	# Copy dev configuration environment to etc/${APP_NAME}.conf
 	mkdir -p "${pkg_path}/etc/${APP_NAME}"
 	cp "_environments/release."* "${pkg_path}/etc/${APP_NAME}/"
+
+	# Copy anything under a _shared folder into the share folder
+	mkdir -p "${pkg_path}/share/${APP_NAME}"
+	cp -R "**/_share/*" "${pkg_path}/share/${APP_NAME}/"
 
 	(
 		cd "$(dirname "${pkg_path}")" &&
