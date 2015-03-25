@@ -41,7 +41,8 @@ export PACKAGE_PATH="${GOPATH}/src/${PACKAGE}"
 
 if [[ "${BASH_VERSINFO[0]}" -lt 4 ]]; then
 	echo "Error: bash >= 4 is required"
-	echo "  On OSX? brew install bash, and prepend /usr/local/bin/bash to /etc/shells"
+	echo "  On OSX?"
+	echo "    brew install bash, prepend /usr/local/bin/bash to /etc/shells, and sudo chsh -s /user/local/bin/bash <username>"
 	exit 100
 fi
 
