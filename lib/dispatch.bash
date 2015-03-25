@@ -11,6 +11,12 @@ set -o errexit
 #   is the canonical import path of your package
 #   i.e. github.com/user/pkg_repo
 #
+# RELEASE_S3_S3CFG
+#   is the path to the s3cmd configuration file
+#
+# RELEASE_S3_BUCKET
+#   is the name of the s3 bucket
+#
 # DEPLOY_HOSTS
 #  the array of hosts in which the application will be deployed
 #  i.e. export DEPLOY_HOSTS=( "192.168.0.10" "192.168.0.11" )

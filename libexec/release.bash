@@ -74,15 +74,15 @@ if ! $quiet; then
 fi
 hub release create "$($preview && echo "-p")" -f <(echo -e "AuthAPI ${version}\n\nSee [README.md](README.md)") ${pkgs[@]/#/-a } "${git_tag}"
 
-if [[ "${RELEASE_S3CFG}" ]]; then
+if [[ "${RELEASE_S3CFG}" && "${RELEASE_S3_BUCKET}" ]]; then
 	if ! $quiet; then
 		echo "Uploading packages to s3"
 	fi
-	s3cmd -c "${RELEASE_S3CFG}" put "${pkgs[@]}" s3://${APP_NAME}.binary
+	s3cmd -c "${RELEASE_S3CFG}" put "${pkgs[@]}" s3://${RELEASE_S3_BUCKET}
 
 	for pkg in "${pkgs[@]}"; do
 		# Generate signed URLs valid for a year
 		echo "-> ${pkg}"
-		s3cmd -c "${RELEASE_S3CFG}" signurl "s3://${APP_NAME}.binary/$(basename "${pkg}")" +31536000
+		s3cmd -c "${RELEASE_S3CFG}" signurl "s3://${RELEASE_S3_BUCKET}/$(basename "${pkg}")" +31536000
 	done
 fi
