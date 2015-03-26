@@ -36,8 +36,21 @@ export HELP_NAME="${0}"
 # path in which this tool instalation resides.
 export PREFIX="$( cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd )"
 
-# The path to this package inside GOPATH
-export PACKAGE_PATH="${GOPATH}/src/${PACKAGE}"
+# Detect the package path inside GOPATH
+function locate_pkg {
+	(
+		export IFS=":"
+		for path in ${GOPATH}; do
+			pkg_path="${path}/src/${PACKAGE}"
+			if [[ -d "${pkg_path}" ]]; then
+				echo "${pkg_path}"
+				break
+		    fi
+		done
+	)
+}
+
+export PACKAGE_PATH="$(locate_pkg)"
 
 if [[ "${BASH_VERSINFO[0]}" -lt 4 ]]; then
 	echo "Error: bash >= 4 is required"
