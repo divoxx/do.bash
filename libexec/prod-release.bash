@@ -25,6 +25,21 @@ Options:
 EOF
 }
 
+if [[ -z "${DEPLOY_PATH}" ]]; then
+	echo "DEPLOY_PATH needs to be set"
+	exit 101
+fi
+
+if [[ -z "${DEPLOY_HOSTS}" ]]; then
+	echo "DEPLOY_HOSTS needs to be set"
+	exit 101
+fi
+
+if [[ -z "${DEPLOY_PLATFORM}" ]]; then
+	echo "DEPLOY_PLATFORM needs to be set"
+	exit 101
+fi
+
 quiet=false
 
 while getopts ":hq" opt; do

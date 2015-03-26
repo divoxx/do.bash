@@ -29,6 +29,16 @@ set -o errexit
 #   the platform of the machines in which the application will be deployed
 #   i.e. export DEPLOY_PLATFORM="linux_amd64"
 
+if [[ -z "${APP_NAME}" ]]; then
+	echo "APP_NAME needs to be set"
+	exit 101
+fi
+
+if [[ -z "${PACKAGE}" ]]; then
+	echo "PACKAGE needs to be set"
+	exit 101
+fi
+
 # This is the string that should be used to identify the binary on help/usage screens.
 export HELP_NAME="${0}"
 
