@@ -87,25 +87,25 @@ for target in "${targets[@]}"; do
 		echo "Building and packaging for ${target}"
 	fi
 
-	(
-		export GOOS=$(echo $target | cut -d "_" -f 1)
-		export GOARCH=$(echo $target | cut -d "_" -f 2)
-	)
-
 	fn="${APP_NAME}.${git_tag}-${target}"
 	pkg_path="${tmp_dir}/${fn}"
 
-	# Compile binary into bin/
-	mkdir -p "${pkg_path}/bin"
-	godep go build -o "${pkg_path}/bin/${APP_NAME}" -tags release
+	(
+		export GOOS=$(echo $target | cut -d "_" -f 1)
+		export GOARCH=$(echo $target | cut -d "_" -f 2)
 
-	# Copy dev configuration environment to etc/${APP_NAME}.conf
-	mkdir -p "${pkg_path}/etc/${APP_NAME}"
-	cp "_environments/release."* "${pkg_path}/etc/${APP_NAME}/"
+		# Compile binary into bin/
+		mkdir -p "${pkg_path}/bin"
+		godep go build -o "${pkg_path}/bin/${APP_NAME}" -tags release
 
-	# Copy anything under a _shared folder into the share folder
-	mkdir -p "${pkg_path}/share/${APP_NAME}"
-	cp -R **"/_share/"* "${pkg_path}/share/${APP_NAME}/"
+		# Copy dev configuration environment to etc/${APP_NAME}.conf
+		mkdir -p "${pkg_path}/etc/${APP_NAME}"
+		cp "_environments/release."* "${pkg_path}/etc/${APP_NAME}/"
+
+		# Copy anything under a _shared folder into the share folder
+		mkdir -p "${pkg_path}/share/${APP_NAME}"
+		cp -R **"/_share/"* "${pkg_path}/share/${APP_NAME}/"
+	)
 
 	(
 		cd "$(dirname "${pkg_path}")" &&
