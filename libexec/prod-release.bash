@@ -30,7 +30,7 @@ if [[ -z "${DEPLOY_PATH}" ]]; then
 	exit 101
 fi
 
-if [[ -z "${DEPLOY_HOSTS[*]}" ]]; then
+if [[ -z "${DEPLOY_HOSTS}" ]]; then
 	echo "DEPLOY_HOSTS needs to be set"
 	exit 101
 fi
