@@ -8,6 +8,8 @@ source "${PREFIX}/lib/deps.bash"
 function remote_exec {
 	local tmp="$(mktemp -d -t ${APP_NAME}.remote)"
 
+	read -a hosts <<< "${DEPLOY_HOSTS}"
+
 	(
 		cd "${tmp}"
 		mkdir "payload"
@@ -31,6 +33,6 @@ DEPLOY_PATH="${DEPLOY_PATH}"
 $(for i in "${@}"; do cat "${i}"; done)
 EOF
 
-		tar -c payload | parallel --tagstring '[{1}]' 'ssh {1} -- {2}' ::: "${DEPLOY_HOSTS[@]}" ::: "cd \"\$(mktemp -d)\" && tar -xm && bash payload/runner.bash"
+		parallel --tagstring '[{1}]' 'tar -c payload | ssh {1} -- {2}' ::: "${hosts[@]}" ::: "cd \"\$(mktemp -d)\" && tar -xm && bash payload/runner.bash"
 	)
 }

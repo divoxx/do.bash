@@ -1,5 +1,5 @@
 function deploy_setup {
-	mkdir -p "${DEPLOY_PATH}/shared" "${DEPLOY_PATH}/releases"
+	mkdir -p "${DEPLOY_PATH}/shared/log" "${DEPLOY_PATH}/releases"
 }
 
 function deploy_list_releases {
@@ -22,6 +22,7 @@ function deploy_list_releases {
 }
 
 function deploy_release {
+	deploy_setup
 	local name="$(date -u "+%Y-%m-%dT%H:%M:%S")-${1}"
 
 	mkdir -p "${DEPLOY_PATH}/releases/${name}"
