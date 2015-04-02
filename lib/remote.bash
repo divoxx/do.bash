@@ -29,6 +29,7 @@ EOF
 
 		cat > "payload/script.bash" <<EOF
 set -o errexit
+APP_NAME="${APP_NAME}"
 DEPLOY_PATH="${DEPLOY_PATH}"
 $(for i in "${@}"; do cat "${i}"; done)
 EOF

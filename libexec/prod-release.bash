@@ -80,7 +80,7 @@ if ! $quiet; then
 	echo "Deploy to production"
 fi
 cat > "${tmp_dir}/deploy_script.bash" <<EOF
-deploy_restart
 deploy_release ${version}
+deploy_restart
 EOF
 remote_exec "${PREFIX}/lib/remote.deploy.bash" "${tmp_dir}/deploy_script.bash" < "${tmp_dir}/${APP_NAME}.v${version}-${DEPLOY_PLATFORM}.tar.bz2"
