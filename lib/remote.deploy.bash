@@ -34,5 +34,5 @@ function deploy_release {
 }
 
 function deploy_restart {
-	/usr/bin/sudo /usr/bin/sv restart ${APP_NAME}
+	/usr/bin/sudo /usr/sbin/service "${APP_NAME}" restart
 }
