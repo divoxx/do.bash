@@ -66,7 +66,7 @@ fi
 git_tag="v${version}"
 
 tmp_dir="$(mktemp -d -t "${APP_NAME}.${version}")"
-eval "${PREFIX}/libexec/package.bash" "$($quiet && echo "-q")" "${git_tag}" "${tmp_dir}" darwin_amd64 linux_amd64 linux_x86
+eval "${PREFIX}/libexec/package.bash" "$($quiet && echo "-q")" "${git_tag}" "${tmp_dir}" darwin_amd64 linux_amd64 linux_386
 pkgs=( "${tmp_dir}"/* )
 
 if ! $quiet; then
