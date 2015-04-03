@@ -12,15 +12,16 @@ source "${PREFIX}/lib/remote.bash"
 
 function usage {
 	cat <<EOF
-Usage: ${HELP_NAME} prod-release [ -h ] [ -q ] <version>
+Usage: ${HELP_NAME} prod-release [ -h ] [ -q ] <git_tag>
 
 Deploy the current code to production
 
-<version> the version of the app to be released
+<git_tag> the git tag of the app to be released
 
 Options:
     -h  Show this help screen
     -q  Silent mode, useful when calling from scripts
+    -t  Create the git tag
 
 EOF
 }
@@ -41,8 +42,9 @@ if [[ -z "${DEPLOY_PLATFORM}" ]]; then
 fi
 
 quiet=false
+create_tag=false
 
-while getopts ":hq" opt; do
+while getopts ":hqt" opt; do
 	case $opt in
 		h)
 			usage
@@ -50,6 +52,9 @@ while getopts ":hq" opt; do
 			;;
 		q)
 			quiet=true
+			;;
+		t)
+			create_tag=true
 			;;
 		\?)
 			echo "Error: invalid option -${opt}"
@@ -65,22 +70,26 @@ while getopts ":hq" opt; do
 done
 shift $((OPTIND-1))
 
-version="${1}"
-if [[ -z "${version}" ]]; then
-	echo "Error: please provide a version"
+git_tag="${1}"
+if [[ -z "${git_tag}" ]]; then
+	echo "Error: please provide a git_tag"
 	echo ""
 	usage
 	exit 1
 fi
 
+if $create_tag; then
+	git tag -am "Creating tag for prod-release ${git_tag}" "${git_tag}"
+fi
+
 tmp_dir="$(mktemp -d -t "${APP_NAME}")"
-eval "${PREFIX}/libexec/package.bash" "$($quiet && echo "-q")" "v${version}" "${tmp_dir}" "${DEPLOY_PLATFORM}"
+eval "${PREFIX}/libexec/package.bash" "$($quiet && echo "-q")" "${git_tag}" "${tmp_dir}" "${DEPLOY_PLATFORM}"
 
 if ! $quiet; then
 	echo "Deploy to production"
 fi
 cat > "${tmp_dir}/deploy_script.bash" <<EOF
-deploy_release ${version}
+deploy_release ${git_tag}
 deploy_restart
 EOF
-remote_exec "${PREFIX}/lib/remote.deploy.bash" "${tmp_dir}/deploy_script.bash" < "${tmp_dir}/${APP_NAME}.v${version}-${DEPLOY_PLATFORM}.tar.bz2"
+remote_exec "${PREFIX}/lib/remote.deploy.bash" "${tmp_dir}/deploy_script.bash" < "${tmp_dir}/${APP_NAME}.${git_tag}-${DEPLOY_PLATFORM}.tar.bz2"
