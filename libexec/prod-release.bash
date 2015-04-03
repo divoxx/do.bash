@@ -79,6 +79,9 @@ if [[ -z "${git_tag}" ]]; then
 fi
 
 if $create_tag; then
+	if ! $quiet; then
+		echo "Creating git tag ${git_tag}"
+	fi
 	git tag -am "Creating tag for prod-release ${git_tag}" "${git_tag}"
 fi
 
