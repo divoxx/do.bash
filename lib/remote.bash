@@ -5,35 +5,56 @@ declare -A DEPENDENCIES=(
 )
 source "${PREFIX}/lib/deps.bash"
 
-function remote_exec {
+function build_payload {
+	mkdir "payload"
+
+	if [[ ! -t 0 ]]; then
+		cat > "payload/upload"
+	fi
+
+	cat > "payload/runner.bash" <<EOF
+set -o errexit
+if [[ -f "payload/upload" ]]; then
+bash payload/script.bash < payload/upload
+else
+bash payload/script.bash
+fi
+EOF
+
+	cat > "payload/script.bash" <<EOF
+set -o errexit
+APP_NAME="${APP_NAME}"
+DEPLOY_PATH="${DEPLOY_PATH}"
+$(for i in "${@}"; do cat "${i}"; done)
+EOF
+}
+
+function remote_parallel_exec {
+	local tmp="$(mktemp -d -t ${APP_NAME}.remote)"
+
+	read -a hosts <<< "${DEPLOY_HOSTS}"
+	build_payload "${tmp}"
+
+	(
+		cd "${tmp}"
+		build_payload "${@}"
+		parallel --tagstring '[{1}]' 'tar -c payload | ssh {1} -- {2}' ::: "${hosts[@]}" ::: "cd \"\$(mktemp -d)\" && tar -xm && bash payload/runner.bash"
+	)
+}
+
+
+function remote_seq_exec {
 	local tmp="$(mktemp -d -t ${APP_NAME}.remote)"
 
 	read -a hosts <<< "${DEPLOY_HOSTS}"
 
 	(
 		cd "${tmp}"
-		mkdir "payload"
+		build_payload "${@}"
 
-		if [[ ! -t 0 ]]; then
-			cat > "payload/upload"
-		fi
-
-		cat > "payload/runner.bash" <<EOF
-set -o errexit
-if [[ -f "payload/upload" ]]; then
-	bash payload/script.bash < payload/upload
-else
-	bash payload/script.bash
-fi
-EOF
-
-		cat > "payload/script.bash" <<EOF
-set -o errexit
-APP_NAME="${APP_NAME}"
-DEPLOY_PATH="${DEPLOY_PATH}"
-$(for i in "${@}"; do cat "${i}"; done)
-EOF
-
-		parallel --tagstring '[{1}]' 'tar -c payload | ssh {1} -- {2}' ::: "${hosts[@]}" ::: "cd \"\$(mktemp -d)\" && tar -xm && bash payload/runner.bash"
+		for h in "${hosts[@]}"; do
+			tar -c "payload" | ssh "${h}" -- 'cd "$(mktemp -d)" && tar -xm && bash payload/runner.bash'
+			sleep 10
+		done
 	)
 }

@@ -95,4 +95,4 @@ cat > "${tmp_dir}/deploy_script.bash" <<EOF
 deploy_release ${git_tag}
 deploy_restart
 EOF
-remote_exec "${PREFIX}/lib/remote.deploy.bash" "${tmp_dir}/deploy_script.bash" < "${tmp_dir}/${APP_NAME}.${git_tag}-${DEPLOY_PLATFORM}.tar.bz2"
+remote_seq_exec "${PREFIX}/lib/remote.deploy.bash" "${tmp_dir}/deploy_script.bash" < "${tmp_dir}/${APP_NAME}.${git_tag}-${DEPLOY_PLATFORM}.tar.bz2"
