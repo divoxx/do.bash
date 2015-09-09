@@ -80,7 +80,7 @@ Commands:
     build               Builds the application for local development
     package             Builds the application for distribution
     prod-list-releases  List the available releases on the deploy hosts
-    prod-release        Release a version to production
+    deploy              Deploy a version to an environment
     release             Tag a new version, builds it and release it on Github.
 
 EOF
