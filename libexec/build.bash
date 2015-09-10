@@ -54,4 +54,4 @@ godep go generate ./...
 if ! $quiet; then
 	echo "Building application"
 fi
-godep go build -o "${APP_NAME}" -ldflags "-X '${PACKAGE}/http.rootDir' '${PACKAGE_PATH}/http'"
+godep go build -o "${APP_NAME}" -ldflags "-X '${PACKAGE}/http.rootDir=${PACKAGE_PATH}/http'"
