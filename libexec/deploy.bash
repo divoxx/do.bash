@@ -73,9 +73,9 @@ if [[ -z "${git_tag}" ]]; then
 	exit 1
 fi
 
-deploy_path_var="${env}_DEPLOY_PATH"
-deploy_hosts_var="${env}_DEPLOY_HOSTS"
-deploy_platform_var="${env}_DEPLOY_PLATFORM"
+deploy_path_var="${env^^}_DEPLOY_PATH"
+deploy_hosts_var="${env^^}_DEPLOY_HOSTS"
+deploy_platform_var="${env^^}_DEPLOY_PLATFORM"
 
 export DEPLOY_PATH=${!deploy_path_var}
 export DEPLOY_HOSTS=${!deploy_hosts_var}
@@ -107,7 +107,7 @@ tmp_dir="$(mktemp -d -t "${APP_NAME}")"
 eval "${PREFIX}/libexec/package.bash" "$($quiet && echo "-q")" "${git_tag}" "${tmp_dir}" "${DEPLOY_PLATFORM}"
 
 if ! $quiet; then
-	echo "Deploy to production"
+	echo "Deploying to ${env}"
 fi
 cat > "${tmp_dir}/deploy_script.bash" <<EOF
 deploy_setup
