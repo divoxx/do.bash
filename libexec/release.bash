@@ -3,7 +3,7 @@ set -o errexit
 
 # Dependency checking
 declare -A DEPENDENCIES=(
-	["hub --version"]="Github's hub is not installed, get it from\n  https://github.com/github/hub"
+	["ghr -help 2>&1 | grep -q Usage"]="GHR is not installed, get it from\n  https://github.com/tcnksm/ghr"
 )
 if [[ "${RELEASE_S3_S3CFG}" ]]; then
 	DEPENDENCIES["s3cmd --version"]="s3cmd is not installed, get it from\n  https://github.com/s3tools/s3cmd"
@@ -67,14 +67,15 @@ git_tag="v${version}"
 
 tmp_dir="$(mktemp -d -t "${APP_NAME}.${version}")"
 eval "${PREFIX}/libexec/package.bash" "$($quiet && echo "-q")" "${git_tag}" "${tmp_dir}" darwin_amd64 linux_amd64 linux_386
-pkgs=( "${tmp_dir}"/* )
 
 if ! $quiet; then
 	echo "Releasing on github"
 fi
-hub release create "$($preview && echo "-p")" -f <(echo -e "AuthAPI ${version}\n\nSee [README.md](README.md)") ${pkgs[@]/#/-a } "${git_tag}"
+ghr -u doximity -r auth-api --replace "${git_tag}" "${tmp_dir}"
 
 if [[ "${RELEASE_S3_S3CFG}" && "${RELEASE_S3_BUCKET}" ]]; then
+	pkgs=( "${tmp_dir}"/* )
+
 	if ! $quiet; then
 		echo "Uploading packages to s3"
 	fi

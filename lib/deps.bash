@@ -9,7 +9,7 @@ function check_deps {
 			echo ""
 		fi
 
-		if ! ${cmd} > /dev/null 2>&1; then
+		if ! eval "${cmd}" > /dev/null 2>&1; then
 			echo -e "${DEPENDENCIES[$cmd]}"
 			status=1
 		fi
