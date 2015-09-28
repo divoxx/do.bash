@@ -100,7 +100,9 @@ if $create_tag; then
 	if ! $quiet; then
 		echo "Creating git tag ${git_tag}"
 	fi
-	git tag -am "Creating tag for prod-release ${git_tag}" "${git_tag}"
+	git pull --tags
+	git tag -am "Creating release tag ${git_tag}" "${git_tag}"
+	git push --tags
 fi
 
 tmp_dir="$(mktemp -d -t "${APP_NAME}")"
@@ -112,6 +114,6 @@ fi
 cat > "${tmp_dir}/deploy_script.bash" <<EOF
 deploy_setup
 deploy_release ${git_tag}
-# deploy_restart
+deploy_restart
 EOF
 remote_seq_exec "${PREFIX}/lib/remote.deploy.bash" "${tmp_dir}/deploy_script.bash" < "${tmp_dir}/${APP_NAME}.${git_tag}-${DEPLOY_PLATFORM}.tar.bz2"

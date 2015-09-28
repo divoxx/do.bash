@@ -12,24 +12,24 @@ source "${PREFIX}/lib/deps.bash"
 
 function usage {
 	cat <<EOF
-Usage: ${HELP_NAME} release [ -h ] [ -q ] [ -p ] <version>
+Usage: ${HELP_NAME} release [ -h ] [ -q ] [ -t ] <git_tag>
 
 Builds and release a new binary distribution of the project.
 
-<version>  the version to be released, requires a git tag v\${version}
+<git_tag> the git tag of the app to be released
 
 Options:
     -h  Show this help screen
     -q  Silent mode, useful when calling from scripts
-    -p  Preview release
+    -t  Create the git tag
 
 EOF
 }
 
 quiet=false
-preview=false
+create_tag=false
 
-while getopts ":hqp" opt; do
+while getopts ":hqt" opt; do
 	case $opt in
 		h)
 			usage
@@ -38,8 +38,8 @@ while getopts ":hqp" opt; do
 		q)
 			quiet=true
 			;;
-		p)
-			preview=true
+		t)
+			create_tag=true
 			;;
 		\?)
 			echo "Error: invalid option -${opt}"
@@ -55,17 +55,24 @@ while getopts ":hqp" opt; do
 done
 shift $((OPTIND-1))
 
-version="${1}"
-if [[ -z "${version}" ]]; then
-	echo "Error: please provide a version"
+git_tag="${1}"
+if [[ -z "${git_tag}" ]]; then
+	echo "Error: please provide a git_tag"
 	echo ""
 	usage
 	exit 1
 fi
 
-git_tag="v${version}"
+if $create_tag; then
+	if ! $quiet; then
+		echo "Creating git tag ${git_tag}"
+	fi
+	git pull --tags
+	git tag -am "Creating release tag ${git_tag}" "${git_tag}"
+	git push --tags
+fi
 
-tmp_dir="$(mktemp -d -t "${APP_NAME}.${version}")"
+tmp_dir="$(mktemp -d -t "${APP_NAME}.${git_tag}")"
 eval "${PREFIX}/libexec/package.bash" "$($quiet && echo "-q")" "${git_tag}" "${tmp_dir}" darwin_amd64 linux_amd64 linux_386
 
 if ! $quiet; then
