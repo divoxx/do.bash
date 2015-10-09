@@ -105,6 +105,9 @@ for target in "${targets[@]}"; do
 		# Copy anything under a _shared folder into the share folder
 		mkdir -p "${pkg_path}/share/${APP_NAME}"
 		cp -R **"/_share/"* "${pkg_path}/share/${APP_NAME}/"
+
+		mv "release.run.bash" "${pkg_path}/run.bash"
+		chmod +x "${pkg_path}/run.bash"
 	)
 
 	(
