@@ -106,7 +106,7 @@ for target in "${targets[@]}"; do
 		mkdir -p "${pkg_path}/share/${APP_NAME}"
 		cp -R **"/_share/"* "${pkg_path}/share/${APP_NAME}/"
 
-		mv "release.run.bash" "${pkg_path}/run.bash"
+		cp "release.run.bash" "${pkg_path}/run.bash"
 		chmod +x "${pkg_path}/run.bash"
 	)
 
