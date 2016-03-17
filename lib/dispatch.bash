@@ -77,10 +77,9 @@ Usage: ${HELP_NAME} [ <command> | help <command> ]
 Implements a banch of build tools for $(basename "${0}").
 
 Commands:
-    build               Builds the application for local development
+    deploy              Deploy a version to an environment
     package             Builds the application for distribution
     prod-list-releases  List the available releases on the deploy hosts
-    deploy              Deploy a version to an environment
     release             Tag a new version, builds it and release it on Github.
 
 EOF

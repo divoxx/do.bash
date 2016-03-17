@@ -79,7 +79,7 @@ if ! $quiet; then
 fi
 mkdir -p "${tmp_dir}/source"
 git archive --format=tar "${git_tag}" | tar -x -C "${tmp_dir}/source"
-( cd "${tmp_dir}/source"; godep go generate ./... )
+( cd "${tmp_dir}/source"; go generate ./... )
 
 # Build the app for the targeted os and arch
 for target in "${targets[@]}"; do
@@ -96,18 +96,11 @@ for target in "${targets[@]}"; do
 
 		# Compile binary into bin/
 		mkdir -p "${pkg_path}/bin"
-		godep go build -o "${pkg_path}/bin/${APP_NAME}" -tags release
-
-		# Copy dev configuration environment to etc/${APP_NAME}.conf
-		mkdir -p "${pkg_path}/etc/${APP_NAME}"
-		cp "_environments/release."* "${pkg_path}/etc/${APP_NAME}/"
+		go build -o "${pkg_path}/bin/${APP_NAME}" -tags release
 
 		# Copy anything under a _shared folder into the share folder
-		mkdir -p "${pkg_path}/share/${APP_NAME}"
-		cp -R **"/_share/"* "${pkg_path}/share/${APP_NAME}/"
-
-		cp "release.run.bash" "${pkg_path}/run.bash"
-		chmod +x "${pkg_path}/run.bash"
+		mkdir -p "${pkg_path}/share"
+		cp -R **"/_share/"* "${pkg_path}/share/"
 	)
 
 	(
