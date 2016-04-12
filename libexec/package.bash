@@ -68,16 +68,16 @@ done
 mkdir -p "${location}"
 location="$(cd "${location}" && pwd)"
 
-# tmp_dir is where all the intermediate files will be stored
-tmp_dir="$(mktemp -d -t ${APP_NAME})"
+# build_tmp_dir is where all the intermediate files will be stored
+build_tmp_dir="$(mktemp -d -t ${APP_NAME})"
 
 # creates a copy of the repository at the provided git tag
 if ! $quiet; then
 	echo "Preparing ${git_tag} for build"
 fi
-mkdir -p "${tmp_dir}/source"
-git archive --format=tar "${git_tag}" | tar -x -C "${tmp_dir}/source"
-( cd "${tmp_dir}/source"; go generate ./... )
+mkdir -p "${build_tmp_dir}/source"
+git archive --format=tar "${git_tag}" | tar -x -C "${build_tmp_dir}/source"
+( cd "${build_tmp_dir}/source"; go generate ./... )
 
 # Build the app for the targeted os and arch
 for target in "${targets[@]}"; do
@@ -86,7 +86,7 @@ for target in "${targets[@]}"; do
 	fi
 
 	fn="${APP_NAME}.${git_tag}-${target}"
-	pkg_path="${tmp_dir}/${fn}"
+	pkg_path="${build_tmp_dir}/${fn}"
 
 	(
 		export GOOS=$(echo $target | cut -d "_" -f 1)

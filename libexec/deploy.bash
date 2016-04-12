@@ -106,7 +106,7 @@ if $create_tag; then
 fi
 
 tmp_dir="$(mktemp -d -t "${APP_NAME}")"
-eval "${PREFIX}/libexec/package.bash" "$($quiet && echo "-q")" "${git_tag}" "${tmp_dir}" "${DEPLOY_PLATFORM}"
+source "${PREFIX}/libexec/package.bash" $($quiet && echo "-q") "${git_tag}" "${tmp_dir}" "${DEPLOY_PLATFORM}"
 
 if ! $quiet; then
 	echo "Deploying to ${env}"
