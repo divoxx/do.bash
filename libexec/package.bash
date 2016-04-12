@@ -6,8 +6,6 @@ shopt -s globstar
 # Dependency checking
 declare -A DEPENDENCIES=(
 	["git --version"]="git is not installed, get it from\n  http://git-scm.com/"
-	["godep help"]="godep is not installed, run\n  go get -u github.com/tools/godep"
-	["go-bindata -version"]="go-bindata is not installed, run\n  go get -u github.com/jteeuwen/go-bindata/..."
 )
 source "${PREFIX}/lib/deps.bash"
 
@@ -96,11 +94,21 @@ for target in "${targets[@]}"; do
 
 		# Compile binary into bin/
 		mkdir -p "${pkg_path}/bin"
-		go build -o "${pkg_path}/bin/${APP_NAME}" -tags release
+
+		if [[ "$(type -t do_build)"  == "function" ]]; then
+			do_build "${pkg_path}/bin/${APP_NAME}"
+		else
+			echo "do_build is not defined"
+			exit 1
+		fi
 
 		# Copy anything under a _shared folder into the share folder
 		mkdir -p "${pkg_path}/share"
 		cp -R **"/_share/"* "${pkg_path}/share/"
+
+		if [[ "$(type -t do_post_package)"  == "function" ]]; then
+			(cd "${pkg_path}" && do_post_package)
+		fi
 	)
 
 	(

@@ -33,7 +33,6 @@ function remote_parallel_exec {
 	local tmp="$(mktemp -d -t ${APP_NAME}.remote)"
 
 	read -a hosts <<< "${DEPLOY_HOSTS}"
-	build_payload "${tmp}"
 
 	(
 		cd "${tmp}"

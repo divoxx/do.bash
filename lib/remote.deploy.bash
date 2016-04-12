@@ -10,15 +10,21 @@ function deploy_list_releases {
 
 	echo -e "Releases (${DEPLOY_PATH}):\n"
 
-	for dir in $(ls -1r "${DEPLOY_PATH}/releases/"); do
-		if [[ "${DEPLOY_PATH}/releases/${dir}" == "$(readlink "${DEPLOY_PATH}/current")" ]]; then
-			echo "  * $(basename "${dir}") (current)"
+	for deploy in `deploy_list_deploy_versions`; do
+		if [[ "${DEPLOY_PATH}/releases/${deploy}" == "$(readlink "${DEPLOY_PATH}/current")" ]]; then
+			echo "  * ${deploy} (current)"
 		else
-			echo "  * $(basename "${dir}")"
+			echo "  * ${deploy}"
 		fi
 	done
 
 	echo ""
+}
+
+function deploy_list_deploy_versions {
+	for dir in $(ls -1r "${DEPLOY_PATH}/releases/"); do
+		echo "$(basename "${dir}")"
+	done
 }
 
 function deploy_release {
@@ -31,6 +37,13 @@ function deploy_release {
 
 	for rel in $(ls "${DEPLOY_PATH}" | head -n -10); do
 		rm -ri "${DEPLOY_PATH}/releases${rel}"
+	done
+}
+
+function deploy_clean_releases {
+	output=`deploy_list_deploy_versions`
+	for deploy in $(echo "${output}" | tail -n +11); do
+		rm -rf "${DEPLO	Y_PATH}/releases/${deploy}"
 	done
 }
 

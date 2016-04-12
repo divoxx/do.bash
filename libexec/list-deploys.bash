@@ -6,9 +6,11 @@ source "${PREFIX}/lib/remote.bash"
 
 function usage {
 	cat <<EOF
-Usage: ${HELP_NAME} prod-list-releases [ -h ]
+Usage: ${HELP_NAME} list-deploys [ -h ] <env>
 
 Deploy the current available releases in production's history
+
+<env> is the target environment: prod, amstel
 
 Options:
     -h  Show this help screen
@@ -38,9 +40,25 @@ while getopts ":hq" opt; do
 done
 shift $((OPTIND-1))
 
+env="${1}"
+if [[ -z "${env}" ]]; then
+	echo "Error: please provide an env"
+	echo ""
+	usage
+	exit 1
+fi
+
+deploy_path_var="${env^^}_DEPLOY_PATH"
+deploy_hosts_var="${env^^}_DEPLOY_HOSTS"
+deploy_platform_var="${env^^}_DEPLOY_PLATFORM"
+
+export DEPLOY_PATH=${!deploy_path_var}
+export DEPLOY_HOSTS=${!deploy_hosts_var}
+export DEPLOY_PLATFORM=${!deploy_platform_var}
+
 tmp=$(mktemp -t ${APP_NAME}.prod-list-releases)
 cat > "${tmp}" <<EOF
 DEPLOY_PATH="${DEPLOY_PATH}"
 deploy_list_releases
 EOF
-remote_exec "${PREFIX}/lib/remote.deploy.bash" "${tmp}"
+remote_parallel_exec "${PREFIX}/lib/remote.deploy.bash" "${tmp}"

@@ -17,5 +17,3 @@ function check_deps {
 
 	return $status
 }
-
-check_deps

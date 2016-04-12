@@ -77,10 +77,10 @@ Usage: ${HELP_NAME} [ <command> | help <command> ]
 Implements a banch of build tools for $(basename "${0}").
 
 Commands:
-    deploy              Deploy a version to an environment
-    package             Builds the application for distribution
-    prod-list-releases  List the available releases on the deploy hosts
-    release             Tag a new version, builds it and release it on Github.
+    deploy        Deploy a version to an environment
+    package       Builds the application for distribution
+    list-deploys  List the available releases on the deploy hosts
+    release       Tag a new version, builds it and release it on Github.
 
 EOF
 }
@@ -100,7 +100,11 @@ function dispatch {
 		cmd="${PREFIX}/libexec/$(basename "${1}").bash"
 
 		if [[ -e "${cmd}" ]]; then
-			(cd "${PACKAGE_PATH}"; eval "${cmd}" "${args[@]}")
+			if [[ -z "${args[@]}" ]]; then
+				(cd "${PACKAGE_PATH}"; source "${cmd}" "")
+			else
+				(cd "${PACKAGE_PATH}"; source "${cmd}" ${args[@]})
+			fi
 		else
 			echo "Error: unknown command ${1}"
 			echo ""
