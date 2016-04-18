@@ -43,7 +43,7 @@ function deploy_release {
 function deploy_clean_releases {
 	output=`deploy_list_deploy_versions`
 	for deploy in $(echo "${output}" | tail -n +11); do
-		rm -rf "${DEPLO	Y_PATH}/releases/${deploy}"
+		rm -rf "${DEPLOY_PATH}/releases/${deploy}"
 	done
 }
 
