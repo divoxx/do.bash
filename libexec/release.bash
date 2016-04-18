@@ -73,7 +73,7 @@ if $create_tag; then
 fi
 
 tmp_dir="$(mktemp -d -t "${APP_NAME}.${git_tag}")"
-eval "${PREFIX}/libexec/package.bash" "$($quiet && echo "-q")" "${git_tag}" "${tmp_dir}" darwin_amd64 linux_amd64 linux_386
+source "${PREFIX}/libexec/package.bash" $($quiet && echo "-q") "${git_tag}" "${tmp_dir}" darwin_amd64 linux_amd64 linux_386
 
 if ! $quiet; then
 	echo "Releasing on github"
@@ -86,11 +86,11 @@ if [[ "${RELEASE_S3_S3CFG}" && "${RELEASE_S3_BUCKET}" ]]; then
 	if ! $quiet; then
 		echo "Uploading packages to s3"
 	fi
-	s3cmd -c "${RELEASE_S3_S3CFG}" put "${pkgs[@]}" s3://${RELEASE_S3_BUCKET}
+	s3cmd put "${pkgs[@]}" s3://${RELEASE_S3_BUCKET}
 
 	for pkg in "${pkgs[@]}"; do
 		# Generate signed URLs valid for a year
 		echo "-> ${pkg}"
-		s3cmd -c "${RELEASE_S3_S3CFG}" signurl "s3://${RELEASE_S3_BUCKET}/$(basename "${pkg}")" +31536000
+		s3cmd signurl "s3://${RELEASE_S3_BUCKET}/$(basename "${pkg}")" +31536000
 	done
 fi
