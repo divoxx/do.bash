@@ -4,10 +4,8 @@ set -o errexit
 # Dependency checking
 declare -A DEPENDENCIES=(
 	["ghr -help 2>&1 | grep -q Usage"]="GHR is not installed, get it from\n  https://github.com/tcnksm/ghr"
+	["aws --version"]="awscli is not installed, brew install awscli"
 )
-if [[ "${RELEASE_S3_S3CFG}" ]]; then
-	DEPENDENCIES["s3cmd --version"]="s3cmd is not installed, get it from\n  https://github.com/s3tools/s3cmd"
-fi
 source "${PREFIX}/lib/deps.bash"
 
 function usage {
@@ -80,17 +78,15 @@ if ! $quiet; then
 fi
 ghr -u doximity -r auth-api --replace "${git_tag}" "${tmp_dir}"
 
-if [[ "${RELEASE_S3_S3CFG}" && "${RELEASE_S3_BUCKET}" ]]; then
+if [[ "${RELEASE_S3_BUCKET}" ]]; then
 	pkgs=( "${tmp_dir}"/* )
 
 	if ! $quiet; then
 		echo "Uploading packages to s3"
 	fi
-	s3cmd put "${pkgs[@]}" s3://${RELEASE_S3_BUCKET}
 
 	for pkg in "${pkgs[@]}"; do
-		# Generate signed URLs valid for a year
-		echo "-> ${pkg}"
-		s3cmd signurl "s3://${RELEASE_S3_BUCKET}/$(basename "${pkg}")" +31536000
+		aws s3 cp "${pkg}" "s3://${RELEASE_S3_BUCKET}"
+		aws s3 presign "s3://${RELEASE_S3_BUCKET}/$(basename "${pkg}")" --expires-in 31536000
 	done
 fi
