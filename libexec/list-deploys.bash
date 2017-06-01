@@ -56,7 +56,7 @@ export DEPLOY_PATH=${!deploy_path_var}
 export DEPLOY_HOSTS=${!deploy_hosts_var}
 export DEPLOY_PLATFORM=${!deploy_platform_var}
 
-tmp=$(mktemp -t ${APP_NAME}.prod-list-releases)
+tmp=$(mktemp --tmpdir -d ${APP_NAME}.prod-list-releases.XXXXX)
 cat > "${tmp}" <<EOF
 DEPLOY_PATH="${DEPLOY_PATH}"
 deploy_list_releases

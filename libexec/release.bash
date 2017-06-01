@@ -70,7 +70,7 @@ if $create_tag; then
 	git push --tags
 fi
 
-tmp_dir="$(mktemp -d -t "${APP_NAME}.${git_tag}")"
+tmp_dir="$(mktemp --tmpdir -d "${APP_NAME}.${git_tag}.XXXXX")"
 source "${PREFIX}/libexec/package.bash" $($quiet && echo "-q") "${git_tag}" "${tmp_dir}" darwin_amd64 linux_amd64 linux_386
 
 if ! $quiet; then

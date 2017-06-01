@@ -30,7 +30,7 @@ EOF
 }
 
 function remote_parallel_exec {
-	local tmp="$(mktemp -d -t ${APP_NAME}.remote)"
+	local tmp="$(mktemp --tmpdir -d ${APP_NAME}.remote.XXXXX)"
 
 	read -a hosts <<< "${DEPLOY_HOSTS}"
 
@@ -43,7 +43,7 @@ function remote_parallel_exec {
 
 
 function remote_seq_exec {
-	local tmp="$(mktemp -d -t ${APP_NAME}.remote)"
+	local tmp="$(mktemp --tmpdir -d ${APP_NAME}.remote.XXXXX)"
 
 	read -a hosts <<< "${DEPLOY_HOSTS}"
 

@@ -69,7 +69,7 @@ mkdir -p "${location}"
 location="$(cd "${location}" && pwd)"
 
 # build_tmp_dir is where all the intermediate files will be stored
-build_tmp_dir="$(mktemp -d -t ${APP_NAME})"
+build_tmp_dir="$(mktemp --tmpdir -d ${APP_NAME}.XXXXX)"
 
 # creates a copy of the repository at the provided git tag
 if ! $quiet; then
