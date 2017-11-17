@@ -104,7 +104,7 @@ for target in "${targets[@]}"; do
 
 		# Copy anything under a _shared folder into the share folder
 		mkdir -p "${pkg_path}/share"
-		cp -R **"/_share/"* "${pkg_path}/share/"
+		cp -R **"/_share/"* "${pkg_path}/share/" || true
 
 		if [[ "$(type -t do_post_package)"  == "function" ]]; then
 			(cd "${pkg_path}" && do_post_package)
